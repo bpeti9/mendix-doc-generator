@@ -123,9 +123,11 @@ The functions follow the pages reached from the **"{{MENU_GROUP}}"** navigation 
      each such page gets its OWN numbered subsection (3.3, 3.4, …) with its OWN access matrix — do not
      merge several pages into one subsection. Renumber Scheduled events / Logs after however many page
      subsections there are.
-     Each subsection gets a description, an access matrix, and a SCREENSHOT of the page (overview +
-     edit/detail dialogs), plus samples of useful artifacts (generated documents/PDFs, key filters,
-     error states). Use marked placeholders 🖼️ / 📄 until real captures are added.
+     Each subsection, IN ORDER: a description, the access matrix, then a **Functions:** bullet list
+     that writes out every action from the matrix as one detailed bullet each (what it does, which
+     page/microflow, any role limit), then a SCREENSHOT of the page (overview + edit/detail dialogs),
+     plus samples of useful artifacts (generated documents/PDFs, key filters, error states). Use
+     marked placeholders 🖼️ / 📄 until real captures are added.
      Access matrix: granted = ✅ ; not granted = – . Markdown table (no HTML — Confluence escapes it). -->
 
 ### 3.1. {{FUNCTION_1}}
@@ -136,6 +138,11 @@ The functions follow the pages reached from the **"{{MENU_GROUP}}"** navigation 
 |----------|:---:|:---:|
 | {{ACTION_1}} | ✅ | ✅ |
 | {{ACTION_2}} | ✅ | – |
+
+**Functions:**
+
+- **{{ACTION_1}}** — {{ACTION_1_DETAIL}}
+- **{{ACTION_2}}** — {{ACTION_2_DETAIL}}
 
 > 🖼️ **[Screenshot: {{FUNCTION_1}} — overview page]**
 > 🖼️ **[Screenshot: {{FUNCTION_1}} — edit/detail dialog]**
@@ -148,6 +155,11 @@ The functions follow the pages reached from the **"{{MENU_GROUP}}"** navigation 
 |----------|:---:|:---:|
 | {{ACTION_1}} | ✅ | ✅ |
 | {{ACTION_2}} | ✅ | – |
+
+**Functions:**
+
+- **{{ACTION_1}}** — {{ACTION_1_DETAIL}}
+- **{{ACTION_2}}** — {{ACTION_2_DETAIL}}
 
 > 🖼️ **[Screenshot: {{FUNCTION_2}} — page]**
 > 📄 **[Sample: {{FUNCTION_2}} — generated artifact, if any (e.g. exported document/PDF)]**

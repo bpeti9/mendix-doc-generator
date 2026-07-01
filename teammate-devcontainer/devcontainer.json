@@ -1,0 +1,25 @@
+{
+  "// ": "TEAMMATE DEVCONTAINER for generating Mendix handover docs with the doc-generator plugin.",
+  "// how ": "Copy this folder as `.devcontainer/` into ANY Mendix project (the repo containing the .mpr), set MARKETPLACE_URL below, then 'Reopen in Container'. The plugin auto-installs; mxcli is fetched per-platform on first use.",
+  "name": "mendix-doc-generator",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": { "version": "3.12" }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": ["anthropic.claude-code"]
+    }
+  },
+
+  "// MARKETPLACE_URL": "Replace with the git URL you pushed mendix-doc-generator/ to (e.g. https://dev.azure.com/blackbelt/_git/mendix-doc-generator). A local path also works if the marketplace folder is mounted.",
+  "containerEnv": {
+    "MARKETPLACE_URL": "REPLACE_WITH_GIT_URL_OF_mendix-doc-generator"
+  },
+
+  "postCreateCommand": "curl -fsSL https://claude.ai/install.sh | bash && export PATH=\"$HOME/.local/bin:$PATH\" && claude plugin marketplace add \"$MARKETPLACE_URL\" && claude plugin install doc-generator@blackbelt && echo '✅ doc-generator installed — open a Claude session and run /doc-generator:generate-doc'",
+
+  "remoteUser": "vscode"
+}

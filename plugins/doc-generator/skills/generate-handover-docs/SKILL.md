@@ -22,14 +22,14 @@ or site — every such value is resolved at run time or passed as an argument.
 
 | Code | Document | Template |
 |------|----------|----------|
-| **FS** | Functional Specification (black-box, by screen, data interfaces) | `${CLAUDE_PLUGIN_ROOT}/templates/FS_Functional_Specification.template.md` |
-| **MG** | Operations Guide (config, scheduled events, logging, errors) | `${CLAUDE_PLUGIN_ROOT}/templates/MG_Operations_Guide.template.md` |
-| **ARCH** | Architecture (building blocks, domain model, diagram, integrations) | `${CLAUDE_PLUGIN_ROOT}/templates/ARCH_Architecture.template.md` |
-| **UG** | User Guide (step-by-step screen walkthrough) | `${CLAUDE_PLUGIN_ROOT}/templates/UG_User_Guide.template.md` |
-| **TK** | Developer & Support Documentation (glossary, install, functions + permission matrices, data types, support runbook) | `${CLAUDE_PLUGIN_ROOT}/templates/TK_Developer_Support_Documentation.template.md` |
+| **FS** | Functional Specification (black-box, by screen, data interfaces) | `docs/templates/FS_Functional_Specification.template.md` |
+| **MG** | Operations Guide (config, scheduled events, logging, errors) | `docs/templates/MG_Operations_Guide.template.md` |
+| **ARCH** | Architecture (building blocks, domain model, diagram, integrations) | `docs/templates/ARCH_Architecture.template.md` |
+| **UG** | User Guide (step-by-step screen walkthrough) | `docs/templates/UG_User_Guide.template.md` |
+| **TK** | Developer & Support Documentation (glossary, install, functions + permission matrices, data types, support runbook) | `docs/templates/TK_Developer_Support_Documentation.template.md` |
 
 Always start from these templates so every module reads the same. See
-`${CLAUDE_PLUGIN_ROOT}/templates/README.md` for the conventions baked into them.
+`docs/templates/README.md` for the conventions baked into them.
 
 ---
 
@@ -56,11 +56,11 @@ Auto-detect the `.mpr` in the working directory; never assume a name:
 
 ```bash
 MPR=$(ls *.mpr 2>/dev/null | head -1)
-mxcli -p "$MPR" -c "SHOW MODULES"
+./mxcli -p "$MPR" -c "SHOW MODULES"
 ```
 
 If there are multiple `.mpr` files, ask the user which one. Always call the local binary
-as `mxcli`.
+as `./mxcli`.
 
 ---
 
@@ -83,26 +83,26 @@ Substitute `$M` with the module name and `$MPR` with the detected project file.
 
 ```bash
 # Structure, folders, scheduled events (interval/enabled NOT exposed — note "set in Studio Pro/Cloud Portal")
-mxcli -p "$MPR" -c "SHOW STRUCTURE DEPTH 3 IN $M ALL"
+./mxcli -p "$MPR" -c "SHOW STRUCTURE DEPTH 3 IN $M ALL"
 
 # Domain model
-mxcli -p "$MPR" -c "SHOW ENTITIES IN $M"
-mxcli -p "$MPR" -c "SHOW ASSOCIATIONS IN $M"
-mxcli -p "$MPR" -c "SHOW ENUMERATIONS IN $M"
-mxcli -p "$MPR" -c "DESCRIBE ENTITY $M.<Entity>"   # run for EVERY entity (business, staging, AND non-persistent) — full attribute list, types, indexes, event handlers, access
+./mxcli -p "$MPR" -c "SHOW ENTITIES IN $M"
+./mxcli -p "$MPR" -c "SHOW ASSOCIATIONS IN $M"
+./mxcli -p "$MPR" -c "SHOW ENUMERATIONS IN $M"
+./mxcli -p "$MPR" -c "DESCRIBE ENTITY $M.<Entity>"   # run for EVERY entity (business, staging, AND non-persistent) — full attribute list, types, indexes, event handlers, access
 
 # Microflows (group by prefix convention — see note)
-mxcli -p "$MPR" -c "SELECT Name, MicroflowType, ReturnType, ActivityCount, Complexity FROM CATALOG.MICROFLOWS WHERE ModuleName='$M' ORDER BY Name"
+./mxcli -p "$MPR" -c "SELECT Name, MicroflowType, ReturnType, ActivityCount, Complexity FROM CATALOG.MICROFLOWS WHERE ModuleName='$M' ORDER BY Name"
 
 # Pages, navigation, security, constants
-mxcli -p "$MPR" -c "SHOW PAGES IN $M"
-mxcli -p "$MPR" -c "SHOW NAVIGATION MENU"           # map the module's menu group(s); EVERY page there needs a Functions subsection, incl. Administrator-only pages
-mxcli -p "$MPR" -c "SHOW MODULE ROLES IN $M"
-mxcli -p "$MPR" -c "SHOW SECURITY MATRIX IN $M"
-mxcli -p "$MPR" -c "SELECT Name, DataType, DefaultValue, ExposedToClient FROM CATALOG.CONSTANTS WHERE ModuleName='$M'"
+./mxcli -p "$MPR" -c "SHOW PAGES IN $M"
+./mxcli -p "$MPR" -c "SHOW NAVIGATION MENU"           # map the module's menu group(s); EVERY page there needs a Functions subsection, incl. Administrator-only pages
+./mxcli -p "$MPR" -c "SHOW MODULE ROLES IN $M"
+./mxcli -p "$MPR" -c "SHOW SECURITY MATRIX IN $M"
+./mxcli -p "$MPR" -c "SELECT Name, DataType, DefaultValue, ExposedToClient FROM CATALOG.CONSTANTS WHERE ModuleName='$M'"
 
 # Cross-module dependencies (real architecture)
-mxcli -p "$MPR" -c "SHOW CALLEES OF $M.<EntryFlow>"   # collect callees outside $M and outside utility modules
+./mxcli -p "$MPR" -c "SHOW CALLEES OF $M.<EntryFlow>"   # collect callees outside $M and outside utility modules
 ```
 
 **Microflow prefix convention (configurable per project).** A common convention groups
@@ -174,9 +174,12 @@ Leave marked placeholders: `🖼️ [Screenshot: …]`, `📄 [File sample: …]
 module's navigation menu group(s) its **own** numbered subsection with its **own** access matrix —
 cross-check `SHOW NAVIGATION MENU` against `SHOW PAGES IN $M` so none is omitted, and explicitly
 include **Administrator-only pages** (interface/staging data, master-data admin) as their own
-subsections (do **not** merge several pages into one). Each also gets a screenshot (overview +
-edit/detail dialogs) and samples of useful artifacts (generated documents/PDFs, key filters, notable
-error/empty states). One `🖼️` (or `📄`) placeholder per page/artifact. In **§4.2 Entities**, give
+subsections (do **not** merge several pages into one). **After each access matrix, add a `Funkciók:`
+/ `Functions:` bullet list** that writes out every action from the matrix as one detailed bullet
+(what it does, the page/microflow, any role limit) — order per subsection: description → matrix →
+bullet list → screenshot. Each subsection also gets a screenshot (overview + edit/detail dialogs)
+and samples of useful artifacts (generated documents/PDFs, key filters, notable error/empty states).
+One `🖼️` (or `📄`) placeholder per page/artifact. In **§4.2 Entities**, give
 **every** entity its **own** attribute table listing **all** its attributes — never summarize, merge
 attributes, or omit an entity.
 

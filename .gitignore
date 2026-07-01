@@ -1,0 +1,9 @@
+# mxcli per-platform binaries are fetched on first use from the public
+# github.com/mendixlabs/mxcli release (see plugins/doc-generator/bin/mxcli-sources.json).
+# Do NOT commit the ~90MB blobs — keep only the wrapper, setup-mxcli, and mxcli-sources.json.
+plugins/doc-generator/bin/mxcli-linux-amd64
+plugins/doc-generator/bin/mxcli-linux-arm64
+plugins/doc-generator/bin/mxcli-darwin-amd64
+plugins/doc-generator/bin/mxcli-darwin-arm64
+plugins/doc-generator/bin/mxcli-windows-amd64.exe
+plugins/doc-generator/bin/mxcli-windows-arm64.exe
