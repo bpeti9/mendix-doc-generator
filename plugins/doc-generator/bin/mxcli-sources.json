@@ -1,0 +1,12 @@
+{
+  "_comment": "Where setup-mxcli fetches per-platform mxcli builds. mxcli has no public download URL, so set this once to your internal source (artifact store / release bucket). urlTemplate wins over urls; leave blank to disable auto-fetch and rely on bundled binaries only.",
+  "version": "v0.13.0",
+  "urlTemplate": "",
+  "urls": {
+    "linux-amd64": "",
+    "linux-arm64": "",
+    "darwin-amd64": "",
+    "darwin-arm64": "",
+    "windows-amd64": ""
+  }
+}

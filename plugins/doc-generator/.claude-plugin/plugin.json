@@ -1,0 +1,10 @@
+{
+  "name": "doc-generator",
+  "description": "Generate the five-type Mendix handover documentation set (FS, MG, ARCH, UG, TK) from the model via mxcli, lint and version it, and optionally publish to Confluence.",
+  "version": "1.0.0",
+  "author": {
+    "name": "BlackBelt",
+    "email": "peter.baffi@blackbelt.hu"
+  },
+  "keywords": ["mendix", "documentation", "handover", "mxcli", "confluence"]
+}

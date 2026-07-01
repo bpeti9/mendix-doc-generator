@@ -1,0 +1,17 @@
+{
+  "name": "blackbelt",
+  "owner": {
+    "name": "BlackBelt",
+    "email": "peter.baffi@blackbelt.hu"
+  },
+  "metadata": {
+    "description": "BlackBelt internal Claude Code plugins for Mendix."
+  },
+  "plugins": [
+    {
+      "name": "doc-generator",
+      "source": "./plugins/doc-generator",
+      "description": "Generate the five-type Mendix handover documentation set from the model and optionally publish it to Confluence."
+    }
+  ]
+}

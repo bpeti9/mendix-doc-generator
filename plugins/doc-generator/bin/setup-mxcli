@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# Fetch the mxcli binary for the current platform into this bin/ directory.
+#
+# Source resolution (first match wins):
+#   1. $MXCLI_URL           — full URL to the exact binary for this platform
+#   2. $MXCLI_URL_TEMPLATE   — template with {os} {arch} {ext} {version} placeholders
+#   3. "urlTemplate" in mxcli-sources.json (next to this script)
+#   4. "urls.<os>-<arch>" in mxcli-sources.json
+#
+# Since mxcli has no public download URL, set one of the above once (e.g. your internal
+# artifact store or release bucket). Example template:
+#   https://artifacts.example.com/mxcli/{version}/mxcli-{os}-{arch}{ext}
+set -euo pipefail
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+SOURCES="$DIR/mxcli-sources.json"
+
+case "$(uname -s)" in
+  Linux) OS=linux ;; Darwin) OS=darwin ;; MINGW*|MSYS*|CYGWIN*) OS=windows ;;
+  *) echo "setup-mxcli: unsupported OS '$(uname -s)'" >&2; exit 1 ;;
+esac
+case "$(uname -m)" in
+  x86_64|amd64) ARCH=amd64 ;; aarch64|arm64) ARCH=arm64 ;;
+  *) echo "setup-mxcli: unsupported arch '$(uname -m)'" >&2; exit 1 ;;
+esac
+EXT=""; [ "$OS" = windows ] && EXT=".exe"
+OUT="$DIR/mxcli-$OS-$ARCH$EXT"
+
+# read a scalar key from the JSON via python (available anywhere Claude Code runs)
+json_get() { python3 -c "import json,sys;d=json.load(open('$SOURCES'));print(eval('d'+sys.argv[1]) or '')" "$1" 2>/dev/null || true; }
+
+VERSION="${MXCLI_VERSION:-$( [ -f "$SOURCES" ] && json_get "['version']" )}"
+URL="${MXCLI_URL:-}"
+if [ -z "$URL" ]; then
+  TPL="${MXCLI_URL_TEMPLATE:-$( [ -f "$SOURCES" ] && json_get "['urlTemplate']" )}"
+  if [ -n "$TPL" ]; then
+    URL="$TPL"; URL="${URL//\{os\}/$OS}"; URL="${URL//\{arch\}/$ARCH}"; URL="${URL//\{ext\}/$EXT}"; URL="${URL//\{version\}/$VERSION}"
+  fi
+fi
+if [ -z "$URL" ] && [ -f "$SOURCES" ]; then
+  URL="$(json_get "['urls']['$OS-$ARCH']")"
+fi
+
+if [ -z "$URL" ]; then
+  echo "setup-mxcli: no download source configured for $OS/$ARCH." >&2
+  echo "Set MXCLI_URL / MXCLI_URL_TEMPLATE, or fill mxcli-sources.json, then re-run." >&2
+  exit 2
+fi
+
+echo "setup-mxcli: downloading $OS/$ARCH from $URL" >&2
+if command -v curl >/dev/null 2>&1; then
+  curl -fsSL "$URL" -o "$OUT"
+elif command -v wget >/dev/null 2>&1; then
+  wget -qO "$OUT" "$URL"
+else
+  echo "setup-mxcli: need curl or wget to download" >&2; exit 3
+fi
+chmod +x "$OUT"
+echo "setup-mxcli: installed $OUT" >&2

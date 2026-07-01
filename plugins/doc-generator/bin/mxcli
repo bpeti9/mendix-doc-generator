@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# mxcli platform selector.
+# `bin/` is on PATH while the plugin is enabled, so calling `mxcli` runs THIS wrapper,
+# which execs the matching per-platform binary bundled next to it (mxcli-<os>-<arch>[.exe]).
+# If the binary for this platform is missing, it tries setup-mxcli to fetch it.
+set -euo pipefail
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+
+detect() {
+  local os arch
+  case "$(uname -s)" in
+    Linux)                os=linux ;;
+    Darwin)               os=darwin ;;
+    MINGW*|MSYS*|CYGWIN*) os=windows ;;
+    *) echo "mxcli: unsupported OS '$(uname -s)'" >&2; exit 1 ;;
+  esac
+  case "$(uname -m)" in
+    x86_64|amd64)  arch=amd64 ;;
+    aarch64|arm64) arch=arm64 ;;
+    *) echo "mxcli: unsupported arch '$(uname -m)'" >&2; exit 1 ;;
+  esac
+  printf '%s %s\n' "$os" "$arch"
+}
+
+read -r OS ARCH < <(detect)
+BIN="$DIR/mxcli-$OS-$ARCH"
+[ "$OS" = windows ] && BIN="$BIN.exe"
+
+if [ ! -x "$BIN" ] && [ -x "$DIR/setup-mxcli" ]; then
+  "$DIR/setup-mxcli" >&2 || true
+fi
+
+if [ ! -x "$BIN" ]; then
+  echo "mxcli: no binary for $OS/$ARCH (looked for $BIN)." >&2
+  echo "Fix: run  $DIR/setup-mxcli  after configuring a source in $DIR/mxcli-sources.json," >&2
+  echo "     or drop the mxcli $OS/$ARCH build there as  mxcli-$OS-$ARCH$([ "$OS" = windows ] && echo .exe)" >&2
+  exit 127
+fi
+
+exec "$BIN" "$@"
