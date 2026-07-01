@@ -14,9 +14,9 @@
     }
   },
 
-  "// MARKETPLACE_URL": "Replace with the git URL you pushed mendix-doc-generator/ to (e.g. https://dev.azure.com/blackbelt/_git/mendix-doc-generator). A local path also works if the marketplace folder is mounted.",
+  "// MARKETPLACE_URL": "Public GitHub marketplace repo — cloned by 'claude plugin marketplace add' on container create.",
   "containerEnv": {
-    "MARKETPLACE_URL": "REPLACE_WITH_GIT_URL_OF_mendix-doc-generator"
+    "MARKETPLACE_URL": "https://github.com/bpeti9/mendix-doc-generator.git"
   },
 
   "postCreateCommand": "curl -fsSL https://claude.ai/install.sh | bash && export PATH=\"$HOME/.local/bin:$PATH\" && claude plugin marketplace add \"$MARKETPLACE_URL\" && claude plugin install doc-generator@blackbelt && echo '✅ doc-generator installed — open a Claude session and run /doc-generator:generate-doc'",
