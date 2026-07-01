@@ -1,0 +1,34 @@
+{
+  "// ": "SCREENSHOT-CAPABLE teammate devcontainer. Heavier than the default: adds JDK 21 + Node + Playwright so the generator can start the Mendix app and capture page screenshots. Use this ONLY if you want real screenshots; otherwise the lean devcontainer.json is faster and produces placeholders.",
+  "// use": "Rename this file to devcontainer.json inside your project's .devcontainer/ folder.",
+  "name": "mendix-doc-generator (with screenshots)",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": { "version": "3.12" },
+    "ghcr.io/devcontainers/features/java:1": { "version": "21", "jdkDistro": "tem" },
+    "ghcr.io/devcontainers/features/node:1": { "version": "22" },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+
+  "forwardPorts": [8080, 8090, 5432],
+  "portsAttributes": {
+    "8080-8099": { "onAutoForward": "silent" },
+    "5432-5499": { "onAutoForward": "silent" }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": ["anthropic.claude-code"]
+    }
+  },
+
+  "containerEnv": {
+    "MARKETPLACE_URL": "https://github.com/bpeti9/mendix-doc-generator.git",
+    "PLAYWRIGHT_CLI_SESSION": "mendix-app"
+  },
+
+  "postCreateCommand": "curl -fsSL https://claude.ai/install.sh | bash && export PATH=\"$HOME/.local/bin:$PATH\" && npm install -g @playwright/cli@latest && npx playwright install --with-deps chromium && claude plugin marketplace add \"$MARKETPLACE_URL\" && claude plugin install doc-generator@blackbelt && echo '✅ doc-generator + Playwright installed — run /doc-generator:generate-doc and choose a with-screenshots output'",
+
+  "remoteUser": "vscode"
+}

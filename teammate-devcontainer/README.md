@@ -28,11 +28,21 @@ setup — the bundled/fetched mxcli runs natively, so nothing has to be built.
 Docs are written to **their** project's `docs/generated/`. mxcli is fetched per-platform from the
 public `mendixlabs/mxcli` release on first use — no manual install.
 
+## Two variants
+
+| File | Use when | Cost |
+|------|----------|------|
+| `devcontainer.json` (default) | You want the docs. Screenshots come out as `🖼️` placeholders. | Light, fast build. |
+| `devcontainer.with-screenshots.json` | You want **real page screenshots**. Rename it to `devcontainer.json`. | Heavy: adds JDK 21 + Node + Playwright + docker-in-docker, and the generator must **build and run the Mendix app** to capture pages (multi-minute). |
+
+Screenshots need two things: Playwright **and** a running app. The lean container has neither
+(by design), so it always falls back to placeholders — that is expected, not an error.
+
 ## Notes
 
 - **Python** is included (via the devcontainers feature) for the doc linter.
-- **No JDK/Node needed for doc generation.** Add them only if you also want `mx check`
-  validation (JDK 21) or Playwright screenshots (Node + `@playwright/cli`).
+- **No JDK/Node needed for doc generation.** They're only in the screenshot variant, for
+  running the app and capturing pages.
 - **Confluence publishing** is optional and per-user: each teammate runs `/mcp` once to
   authenticate Atlassian. Repo-only generation needs no MCP.
 - To update the plugin after you push changes:
